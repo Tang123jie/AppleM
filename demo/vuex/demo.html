@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html <head>
+<meta charset="utf-8">
+<title>VUEX</title>
+<script src="../../node_modules/vue/dist/vue.js"></script>
+<script src="../../node_modules/vuex/dist/vuex.min.js"></script>
+
+</head>
+
+<body>
+    <div id="app">
+        <h2>{{ msg }}</h2>
+        <a href="#" @click="add">点击</a>
+        <counter></counter>
+    </div>
+    <script>
+        const counter = {
+            template: `
+            <div>
+            <div>点击数量：{{ count }}</div>
+            <div>用户名：{{ username }}</div>
+            </div>
+            `,
+            computed: {
+                count() {
+                    return this.$store.state.count;
+                },
+                name(){
+                    return this.$store.state.name;
+                },
+                username(){
+                    return this.$store.getters.username;
+                }
+            }
+        };
+        const store = new Vuex.Store({
+            //唯一的数据源，单一状态树
+            state: {
+                count: 10,
+                name: 'jack'
+            },
+            //通过getters可以派生出一些新的状态
+            getters:{
+               username(state){
+               return state.name + ',Hello';
+               }
+            },
+            //更改vuex的store中的状态的唯一方法是提交mutation
+            mutations: {
+                increment(state,num) {
+                    state.count = num;
+                },
+                updateName(state, username) {
+                    state.name = username;
+                }
+            },
+            //提交的是mutation，而不是直接变更状态，可以包含任意异步操作
+            actions:{
+                incrementAction(context,num){
+                 context.commit("increment",num);
+                }
+            }
+        });
+        new Vue({
+            el: "#app",
+            store,
+            data: {
+                msg: "你好啊!"
+            },
+            components: {
+                counter
+            },
+            methods: {
+                add() {
+                    this.$store.commit("increment",100);
+                    this.$store.commit("updateName",'tony');
+                }
+            }
+        })
+    </script>
+</body>
+
+
+</html>
